@@ -284,6 +284,72 @@ ufw status verbose
 
 echo "✅ UFW firewall configured."
 
+
+#-------------------------------------------------------------
+# 7. Install and Configure Load Test Script
+#-------------------------------------------------------------
+
+echo "Creating Load Test WebsiteTest-main.sh...."
+cat <<'EOF' > /usr/local/bin/WebsiteTest-main.sh
+#!/bin/bash
+
+while true; do
+    duration=$((RANDOM % 120 + 60))   # 1–3 minutes
+    delay=$(awk -v min=0.1 -v max=1 'BEGIN{srand(); print min+rand()*(max-min)}')
+
+    echo "High load for $duration sec (delay $delay)"
+    end=$((SECONDS+duration))
+    while [ $SECONDS -lt $end ]; do
+        curl -s http://MentionWebServerIPHere:5000/ > /dev/null &
+        sleep $delay
+    done
+
+    duration=$((RANDOM % 180 + 60))   # 1–4 minutes
+    delay=$(awk -v min=1 -v max=3 'BEGIN{srand(); print min+rand()*(max-min)}')
+
+    echo "Low load for $duration sec (delay $delay)"
+    end=$((SECONDS+duration))
+    while [ $SECONDS -lt $end ]; do
+        curl -s http://MentionWebServerIPHere:5000/ > /dev/null &
+        sleep $delay
+    done
+done
+EOF
+
+echo "Creating Load Test WebsiteTest-payment.sh...."
+cat <<'EOF' > /usr/local/bin/WebsiteTest-payment.sh
+#!/bin/bash
+
+while true; do
+    duration=$((RANDOM % 120 + 60))   # 1–3 minutes
+    delay=$(awk -v min=0.1 -v max=1 'BEGIN{srand(); print min+rand()*(max-min)}')
+
+    echo "High load for $duration sec (delay $delay)"
+    end=$((SECONDS+duration))
+    while [ $SECONDS -lt $end ]; do
+        curl -s http://MentionWebServerIPHere:80/payment > /dev/null &
+        sleep $delay
+    done
+
+    duration=$((RANDOM % 180 + 60))   # 1–4 minutes
+    delay=$(awk -v min=1 -v max=3 'BEGIN{srand(); print min+rand()*(max-min)}')
+
+    echo "Low load for $duration sec (delay $delay)"
+    end=$((SECONDS+duration))
+    while [ $SECONDS -lt $end ]; do
+        curl -s http://MentionWebServerIPHere:80/payment > /dev/null &
+        sleep $delay
+    done
+done
+EOF
+
+chmod +x /usr/local/bin/WebsiteTest-main.sh /usr/local/bin/WebsiteTest-payment.sh
+
+echo "Starting load test scripts in background..."
+nohup /usr/local/bin/WebsiteTest-main.sh > /var/log/WebsiteTest-main.log 2>&1 &
+nohup /usr/local/bin/WebsiteTest-payment.sh > /var/log/WebsiteTest-payment.log 2>&1 &
+
+
 #-------------------------------------------------------------
 # 6. Final Summary
 #-------------------------------------------------------------
