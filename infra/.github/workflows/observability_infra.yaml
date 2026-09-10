@@ -11,7 +11,7 @@ env:
 
 jobs:
   Terraform_Apply:
-    name: "Deploy 3 tier infra"
+    name: "Deploy observability infra"
     runs-on: ubuntu-latest
 
     defaults:
