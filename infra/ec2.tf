@@ -5,15 +5,15 @@ resource "aws_key_pair" "main" {
 
 # grafana
 module "grafana" {
-  source               = "./modules/ec2"
-  name                 = "grafana-server"
-  ami                  = "ami-0f8a61b66d1accaee"
-  instance_type        = "t3.micro"
-  subnet_id            = data.aws_subnets.all.ids[0]
-  security_group_ids   = [module.security_groups.app_sg_id]
-  key_name             = aws_key_pair.main.key_name
-  associate_public_ip  = true
-  user_data            = file("userdata/grafana-setup.sh")
+  source              = "./modules/ec2"
+  name                = "grafana-server"
+  ami                 = "ami-0f8a61b66d1accaee"
+  instance_type       = "t3.micro"
+  subnet_id           = data.aws_subnets.all.ids[0]
+  security_group_ids  = [module.security_groups.app_sg_id]
+  key_name            = aws_key_pair.main.key_name
+  associate_public_ip = true
+  user_data           = file("userdata/grafana-setup.sh")
   tags = {
     Tier = "grafana"
   }
@@ -22,15 +22,15 @@ module "grafana" {
 
 # Prometheus
 module "prometheus" {
-  source               = "./modules/ec2"
-  name                 = "prometheus-server"
-  ami                  = "ami-0f8a61b66d1accaee"
-  instance_type        = "t3.micro"
-  subnet_id            = data.aws_subnets.all.ids[0]
-  security_group_ids   = [module.security_groups.app_sg_id]
-  key_name             = aws_key_pair.main.key_name
-  associate_public_ip  = true
-  user_data            = file("userdata/prometheus-setup.sh")
+  source              = "./modules/ec2"
+  name                = "prometheus-server"
+  ami                 = "ami-0f8a61b66d1accaee"
+  instance_type       = "t3.micro"
+  subnet_id           = data.aws_subnets.all.ids[0]
+  security_group_ids  = [module.security_groups.app_sg_id]
+  key_name            = aws_key_pair.main.key_name
+  associate_public_ip = true
+  user_data           = file("userdata/prometheus-setup.sh")
   tags = {
     Tier = "Prometheus"
   }
