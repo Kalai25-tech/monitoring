@@ -51,15 +51,15 @@ mkdir -p /tmp/exporter
 cd /tmp/exporter
 
 NODE_VERSION="1.10.2"
-echo "Downloading Node Exporter v$${NODE_VERSION}..."
-wget -q https://github.com/prometheus/node_exporter/releases/download/v$${NODE_VERSION}/node_exporter-$${NODE_VERSION}.linux-amd64.tar.gz
+echo "Downloading Node Exporter v${NODE_VERSION}..."
+wget -q https://github.com/prometheus/node_exporter/releases/download/v${NODE_VERSION}/node_exporter-${NODE_VERSION}.linux-amd64.tar.gz
 
 echo "Extracting Node Exporter..."
-tar xzf node_exporter-$${NODE_VERSION}.linux-amd64.tar.gz
+tar xzf node_exporter-${NODE_VERSION}.linux-amd64.tar.gz
 
 echo "Moving binary to /var/lib/node..."
 mkdir -p /var/lib/node
-mv node_exporter-$${NODE_VERSION}.linux-amd64/node_exporter /var/lib/node/
+mv node_exporter-${NODE_VERSION}.linux-amd64/node_exporter /var/lib/node/
 
 echo "Creating prometheus system user..."
 groupadd --system prometheus || true
