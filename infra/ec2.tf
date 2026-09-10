@@ -16,7 +16,7 @@ module "grafana" {
   iam_instance_profile = module.iam.instance_profile_name
   user_data            = file("userdata/grafana-setup.sh")
   tags = {
-    Tier = "app"
+    Tier = "grafana"
   }
 }
 
@@ -34,6 +34,6 @@ module "Prometheus" {
   iam_instance_profile = module.iam.instance_profile_name
   user_data            = file("userdata/prometheus-setup.sh")
   tags = {
-    Tier = "app"
+    Tier = "Prometheus"
   }
 }
