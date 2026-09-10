@@ -14,7 +14,7 @@ module "grafana" {
   key_name             = aws_key_pair.main.key_name
   associate_public_ip  = true
   iam_instance_profile = module.iam.instance_profile_name
-  user_data            = file("userdata/tomcat_ubuntu.sh")
+  user_data            = file("userdata/grafana-setup.sh")
   tags = {
     Tier = "app"
   }
@@ -32,7 +32,7 @@ module "Prometheus" {
   key_name             = aws_key_pair.main.key_name
   associate_public_ip  = true
   iam_instance_profile = module.iam.instance_profile_name
-  user_data            = file("userdata/tomcat_ubuntu.sh")
+  user_data            = file("userdata/prometheus-setup.sh")
   tags = {
     Tier = "app"
   }
