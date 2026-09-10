@@ -24,7 +24,7 @@ echo "testing"
 #-------------------------------------------------------------
 # 1. Basic System Setup
 #-------------------------------------------------------------
-echo "===== [1/6] Setting up basic system configuration =====" >> /tmp/
+echo "===== [1/6] Setting up basic system configuration =====" 
 echo "Setting hostname to web01..."
 echo "web01" > /etc/hostname  
 hostname web01
