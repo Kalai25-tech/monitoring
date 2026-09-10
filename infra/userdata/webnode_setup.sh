@@ -18,6 +18,12 @@
 LOG_FILE="/tmp/user-data.log"
 exec >> "$LOG_FILE" 2>&1
 
+PROMETHEUS_PRIVATE_IP="${prometheus_private_ip}"
+LOKI_PRIVATE_IP="${loki_private_ip}"
+
+echo "Prometheus IP: ${PROMETHEUS_PRIVATE_IP}"
+echo "Loki IP: ${LOKI_PRIVATE_IP}"
+
 set -e  # Exit immediately if a command fails
 
 echo "testing"
