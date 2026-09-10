@@ -62,7 +62,7 @@ module "webserver" {
   security_group_ids  = [module.security_groups.webserver_sg_id]
   key_name            = aws_key_pair.main.key_name
   associate_public_ip = true
-  user_data = file("userdata/webnode_setup.sh", {
+  user_data = templatefile("${path.module}/userdata/webnode_setup.sh", {
     prometheus_private_ip = module.prometheus.private_ip
     loki_private_ip       = module.loki.private_ip
   })
