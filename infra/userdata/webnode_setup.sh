@@ -184,7 +184,7 @@ cat <<EOF > /etc/alloy/config.alloy
 
 prometheus.remote_write "default" {
   endpoint {
-    url = "http://PrometheusIP:9090/api/v1/write"
+    url = "http://${prometheus_private_ip}:9090/api/v1/write"
   }
 }
 
@@ -223,7 +223,7 @@ loki.source.file "log_scrape" {
 
 loki.write "loki" {
   endpoint {
-    url = "http://LokiIP:3100/loki/api/v1/push"
+    url = "http://${loki_private_ip}:3100/loki/api/v1/push"
   }
 }
 EOF
