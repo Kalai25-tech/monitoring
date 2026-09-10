@@ -37,7 +37,7 @@ module "prometheus" {
 }
 
 # loki
-module "prometheus" {
+module "loki" {
   source              = "./modules/ec2"
   name                = "loki-server"
   ami                 = "ami-0f8a61b66d1accaee"
