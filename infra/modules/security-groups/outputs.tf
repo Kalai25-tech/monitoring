@@ -12,3 +12,8 @@ output "loki_sg_id" {
   description = "Security group ID for the loki"
   value       = aws_security_group.loki.id
 }
+
+output "webserver_sg_id" {
+  description = "Security group ID for the webserver"
+  value       = aws_security_group.webserver.id
+}
