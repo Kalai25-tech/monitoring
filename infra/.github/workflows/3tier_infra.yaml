@@ -1,4 +1,4 @@
-name: "Main - Deploy 3 tier infra - Deploy"
+name: "Main - Deploy observability infra - Deploy"
 
 on:
   workflow_dispatch:
