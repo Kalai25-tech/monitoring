@@ -122,6 +122,52 @@ resource "aws_vpc_security_group_ingress_rule" "loki_ssh" {
 }
 
 
+# webserver inbound
+
+resource "aws_vpc_security_group_ingress_rule" "webserver_ssh" {
+  security_group_id = aws_security_group.webserver.id
+
+  from_port                    = 22
+  to_port                      = 22
+  ip_protocol                  = "tcp"
+  cidr_ipv4 = "0.0.0.0/0"
+}
+
+resource "aws_vpc_security_group_ingress_rule" "webserver_console_from_public" {
+  security_group_id = aws_security_group.webserver.id
+
+  from_port                    = 5000
+  to_port                      = 5000
+  ip_protocol                  = "tcp"
+  cidr_ipv4 = "0.0.0.0/0"
+}
+
+resource "aws_vpc_security_group_ingress_rule" "webserver_console_from_prometheus_sg" {
+  security_group_id = aws_security_group.webserver.id
+
+  from_port                    = 5000
+  to_port                      = 5000
+  ip_protocol                  = "tcp"
+  referenced_security_group_id = aws_security_group.prometheus.id
+}
+
+resource "aws_vpc_security_group_ingress_rule" "webserver_node_exporter_console_from_public" {
+  security_group_id = aws_security_group.webserver.id
+
+  from_port                    = 9100
+  to_port                      = 9100
+  ip_protocol                  = "tcp"
+  cidr_ipv4 = "0.0.0.0/0"
+}
+
+resource "aws_vpc_security_group_ingress_rule" "webserver_node_exporter_console_from_prometheus_sg" {
+  security_group_id = aws_security_group.webserver.id
+
+  from_port                    = 9100
+  to_port                      = 9100
+  ip_protocol                  = "tcp"
+  referenced_security_group_id = aws_security_group.prometheus.id
+}
 
 # grafana outbound
 resource "aws_vpc_security_group_egress_rule" "grafana_outbound" {

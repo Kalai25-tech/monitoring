@@ -49,3 +49,21 @@ output "loki_instance_id" {
   description = "Instance ID of the loki server"
   value       = module.loki.instance_id
 }
+
+
+# webserver
+
+output "webserver_public_ip" {
+  description = "Public IP of the webserver server"
+  value       = module.webserver.public_ip
+}
+
+output "webserver_private_ip" {
+  description = "private_ip of the webserver server"
+  value       = module.webserver.private_ip
+}
+
+output "webserver_instance_id" {
+  description = "Instance ID of the webserver server"
+  value       = module.webserver.instance_id
+}
