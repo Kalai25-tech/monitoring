@@ -40,7 +40,7 @@ jobs:
       - name: Terraform plan
         run: terraform plan -no-color -input=false -out=planfile
 
-      - name: Terraform Apply
-        id: apply
+      #- name: Terraform Apply
+        #id: apply
         #run: terraform apply -auto-approve -input=false planfile
-        run: terraform destroy -auto-approve -input=false
+        #run: terraform destroy -auto-approve -input=false
