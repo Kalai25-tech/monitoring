@@ -64,6 +64,6 @@ module "webserver" {
   associate_public_ip = true
   user_data           = file("userdata/webnode_setup.sh")
   tags = {
-    Tier = "Prometheus"
+    Tier = "webserver"
   }
 }
