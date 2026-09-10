@@ -15,15 +15,18 @@
 #  Tested on: Ubuntu 22.04 LTS
 #=============================================================
 
+LOG_FILE="/tmp/user-data.log"
+exec >> "$LOG_FILE" 2>&1
+
 set -e  # Exit immediately if a command fails
 
 echo "testing"
 #-------------------------------------------------------------
 # 1. Basic System Setup
 #-------------------------------------------------------------
-echo "===== [1/6] Setting up basic system configuration ====="
+echo "===== [1/6] Setting up basic system configuration =====" >> /tmp/
 echo "Setting hostname to web01..."
-echo "web01" > /etc/hostname
+echo "web01" > /etc/hostname  
 hostname web01
 
 echo "Updating and upgrading system packages..."
