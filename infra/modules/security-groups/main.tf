@@ -16,6 +16,24 @@ resource "aws_security_group" "prometheus" {
   }
 }
 
+resource "aws_security_group" "loki" {
+  name   = "loki-sg"
+  vpc_id = var.vpc_id
+
+  tags = {
+    Name = "loki-sg"
+  }
+}
+
+
+resource "aws_security_group" "webserver" {
+  name   = "webserver-sg"
+  vpc_id = var.vpc_id
+
+  tags = {
+    Name = "webserver-sg"
+  }
+}
 
 # grafana
 
@@ -71,6 +89,40 @@ resource "aws_vpc_security_group_ingress_rule" "prometheus_console_from_grafana"
 }
 
 
+# loki
+
+resource "aws_vpc_security_group_ingress_rule" "loki_from_grafana" {
+  security_group_id = aws_security_group.loki.id
+
+  from_port   = 3100
+  to_port     = 3100
+  ip_protocol = "tcp"
+
+  referenced_security_group_id = aws_security_group.grafana.id
+}
+
+resource "aws_vpc_security_group_ingress_rule" "loki_from_webservr" {
+  security_group_id = aws_security_group.loki.id
+
+  from_port   = 3100
+  to_port     = 3100
+  ip_protocol = "tcp"
+
+  referenced_security_group_id = aws_security_group.webserver.id
+}
+
+
+resource "aws_vpc_security_group_ingress_rule" "loki_ssh" {
+  security_group_id = aws_security_group.loki.id
+
+  from_port                    = 22
+  to_port                      = 22
+  ip_protocol                  = "tcp"
+  cidr_ipv4 = "0.0.0.0/0"
+}
+
+
+
 # grafana outbound
 resource "aws_vpc_security_group_egress_rule" "grafana_outbound" {
   security_group_id = aws_security_group.grafana.id
@@ -82,6 +134,14 @@ resource "aws_vpc_security_group_egress_rule" "grafana_outbound" {
 # prometheus outbound
 resource "aws_vpc_security_group_egress_rule" "prometheus_outbound" {
   security_group_id = aws_security_group.prometheus.id
+
+  ip_protocol = "-1"
+  cidr_ipv4   = "0.0.0.0/0"
+}
+
+# loki outbound
+resource "aws_vpc_security_group_egress_rule" "loki_outbound" {
+  security_group_id = aws_security_group.loki.id
 
   ip_protocol = "-1"
   cidr_ipv4   = "0.0.0.0/0"
