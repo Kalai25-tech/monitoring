@@ -10,7 +10,7 @@ module "grafana" {
   ami                 = "ami-0f8a61b66d1accaee"
   instance_type       = "t3.micro"
   subnet_id           = data.aws_subnets.all.ids[0]
-  security_group_ids  = [module.security_groups.app_sg_id]
+  security_group_ids  = [module.security_groups.grafana_sg_id]
   key_name            = aws_key_pair.main.key_name
   associate_public_ip = true
   user_data           = file("userdata/grafana-setup.sh")
@@ -27,7 +27,7 @@ module "prometheus" {
   ami                 = "ami-0f8a61b66d1accaee"
   instance_type       = "t3.micro"
   subnet_id           = data.aws_subnets.all.ids[0]
-  security_group_ids  = [module.security_groups.app_sg_id]
+  security_group_ids  = [module.security_groups.prometheus_sg_id]
   key_name            = aws_key_pair.main.key_name
   associate_public_ip = true
   user_data           = file("userdata/prometheus-setup.sh")
