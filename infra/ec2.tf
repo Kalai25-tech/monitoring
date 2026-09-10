@@ -48,7 +48,7 @@ module "loki" {
   associate_public_ip = true
   user_data           = file("userdata/lokisetup.sh")
   tags = {
-    Tier = "Prometheus"
+    Tier = "loki"
   }
 }
 
