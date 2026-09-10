@@ -1,29 +1,19 @@
-resource "aws_security_group" "lb" {
-  name   = "lb-sg"
+resource "aws_security_group" "grafana" {
+  name   = "grafana-sg"
   vpc_id = var.vpc_id
 
   tags = {
-    Name = "lb-sg"
+    Name = "grafana-sg"
   }
 }
 
-resource "aws_security_group" "app" {
-  name   = "app-sg"
+resource "aws_security_group" "prometheus" {
+  name   = "prometheus-sg"
   vpc_id = var.vpc_id
 
   tags = {
-    Name = "app-sg"
+    Name = "prometheus-sg"
   }
-}
-
-resource "aws_security_group" "backend" {
-  name   = "backend-sg"
-  vpc_id = var.vpc_id
-
-  tags = {
-    Name = "backend-sg"
-  }
-
 }
 
 
