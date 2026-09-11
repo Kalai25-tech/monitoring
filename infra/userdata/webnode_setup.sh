@@ -288,10 +288,16 @@ echo "✅ UFW firewall configured."
 #-------------------------------------------------------------
 # 7. Install and Configure Load Test Script
 #-------------------------------------------------------------
+echo "===== [7/6] Setting up Load Test scripts ====="
 
 echo "Creating Load Test WebsiteTest-main.sh...."
 cat <<'EOF' > /usr/local/bin/WebsiteTest-main.sh
 #!/bin/bash
+
+TOKEN=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" \
+  -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+TARGET_IP=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" \
+  http://169.254.169.254/latest/meta-data/local-ipv4)
 
 while true; do
     duration=$((RANDOM % 120 + 60))   # 1–3 minutes
@@ -300,7 +306,7 @@ while true; do
     echo "High load for $duration sec (delay $delay)"
     end=$((SECONDS+duration))
     while [ $SECONDS -lt $end ]; do
-        curl -s http://MentionWebServerIPHere:5000/ > /dev/null &
+        curl -s http://$TARGET_IP:5000/ > /dev/null &
         sleep $delay
     done
 
@@ -310,7 +316,7 @@ while true; do
     echo "Low load for $duration sec (delay $delay)"
     end=$((SECONDS+duration))
     while [ $SECONDS -lt $end ]; do
-        curl -s http://MentionWebServerIPHere:5000/ > /dev/null &
+        curl -s http://$TARGET_IP:5000/ > /dev/null &
         sleep $delay
     done
 done
@@ -320,6 +326,11 @@ echo "Creating Load Test WebsiteTest-payment.sh...."
 cat <<'EOF' > /usr/local/bin/WebsiteTest-payment.sh
 #!/bin/bash
 
+TOKEN=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" \
+  -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+TARGET_IP=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" \
+  http://169.254.169.254/latest/meta-data/local-ipv4)
+
 while true; do
     duration=$((RANDOM % 120 + 60))   # 1–3 minutes
     delay=$(awk -v min=0.1 -v max=1 'BEGIN{srand(); print min+rand()*(max-min)}')
@@ -327,7 +338,7 @@ while true; do
     echo "High load for $duration sec (delay $delay)"
     end=$((SECONDS+duration))
     while [ $SECONDS -lt $end ]; do
-        curl -s http://MentionWebServerIPHere:80/payment > /dev/null &
+        curl -s http://$TARGET_IP:80/payment > /dev/null &
         sleep $delay
     done
 
@@ -337,7 +348,7 @@ while true; do
     echo "Low load for $duration sec (delay $delay)"
     end=$((SECONDS+duration))
     while [ $SECONDS -lt $end ]; do
-        curl -s http://MentionWebServerIPHere:80/payment > /dev/null &
+        curl -s http://$TARGET_IP:80/payment > /dev/null &
         sleep $delay
     done
 done
@@ -349,6 +360,7 @@ echo "Starting load test scripts in background..."
 nohup /usr/local/bin/WebsiteTest-main.sh > /var/log/WebsiteTest-main.log 2>&1 &
 nohup /usr/local/bin/WebsiteTest-payment.sh > /var/log/WebsiteTest-payment.log 2>&1 &
 
+echo "✅ Load test scripts created and started."
 
 #-------------------------------------------------------------
 # 6. Final Summary
