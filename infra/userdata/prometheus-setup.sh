@@ -96,3 +96,108 @@ systemctl status prometheus --no-pager
 
 # Display service file for verification
 cat "${SERVICE_FILE}"
+
+
+#-------------------------------------------------------------
+# Add helper script to add scrape targets later
+#-------------------------------------------------------------
+echo "===== Creating add-prometheus-target.sh helper script ====="
+
+cat <<'EOF' > /usr/local/bin/add-prometheus-target.sh
+#!/bin/bash
+#=============================================================
+#  Add Scrape Target to Prometheus Config
+#-------------------------------------------------------------
+#  Prompts for a target IP/hostname and port, then appends
+#  a new scrape job to /etc/prometheus/prometheus.yml
+#=============================================================
+
+set -e
+
+PROM_CONFIG="/etc/prometheus/prometheus.yml"
+
+# ---- Sanity checks ----
+if [ ! -f "$PROM_CONFIG" ]; then
+    echo "❌ Error: $PROM_CONFIG not found. Is Prometheus installed on this host?"
+    exit 1
+fi
+
+if [ "$EUID" -ne 0 ]; then
+    echo "❌ Please run this script as root (sudo)."
+    exit 1
+fi
+
+# ---- Prompt for input ----
+read -rp "Enter target IP or hostname: " TARGET_IP
+read -rp "Enter target port: " TARGET_PORT
+
+if [ -z "$TARGET_IP" ] || [ -z "$TARGET_PORT" ]; then
+    echo "❌ Target IP/hostname and port cannot be empty."
+    exit 1
+fi
+
+# ---- Optional: job name and label so repeated runs don't collide ----
+read -rp "Enter job name [default: web_app_systems]: " JOB_NAME
+JOB_NAME=${JOB_NAME:-web_app_systems}
+
+read -rp "Enter app label value [default: web_app_systems]: " APP_LABEL
+APP_LABEL=${APP_LABEL:-web_app_systems}
+
+# ---- Backup existing config ----
+BACKUP_FILE="${PROM_CONFIG}.bak.$(date +%Y%m%d%H%M%S)"
+cp "$PROM_CONFIG" "$BACKUP_FILE"
+echo "🗂  Backed up existing config to $BACKUP_FILE"
+
+# ---- Check if scrape_configs key exists ----
+if ! grep -q "^scrape_configs:" "$PROM_CONFIG"; then
+    echo "⚠️  No 'scrape_configs:' section found. Adding one."
+    echo "" >> "$PROM_CONFIG"
+    echo "scrape_configs:" >> "$PROM_CONFIG"
+fi
+
+# ---- Append the new job block ----
+cat <<EOT >> "$PROM_CONFIG"
+
+  # The job name is added as a label \`job=<job_name>\` to any timeseries scraped from this config.
+  - job_name: "${JOB_NAME}"
+
+    # metrics_path defaults to '/metrics'
+    # scheme defaults to 'http'.
+
+    static_configs:
+      - targets: ["${TARGET_IP}:${TARGET_PORT}"]
+        # The label name is added as a label \`label_name=<label_value>\` to any timeseries scraped from this config.
+        labels:
+          app: "${APP_LABEL}"
+EOT
+
+echo "✅ Added target ${TARGET_IP}:${TARGET_PORT} under job '${JOB_NAME}' to $PROM_CONFIG"
+
+# ---- Validate config syntax if promtool is available ----
+if command -v promtool >/dev/null 2>&1; then
+    echo "🔍 Validating config with promtool..."
+    if promtool check config "$PROM_CONFIG"; then
+        echo "✅ Config syntax is valid."
+    else
+        echo "❌ Config validation failed. Restoring backup..."
+        cp "$BACKUP_FILE" "$PROM_CONFIG"
+        exit 1
+    fi
+else
+    echo "⚠️  promtool not found — skipping syntax validation. Double-check indentation manually if Prometheus fails to reload."
+fi
+
+# ---- Reload Prometheus ----
+if systemctl is-active --quiet prometheus; then
+    echo "🔄 Reloading Prometheus service..."
+    systemctl reload prometheus || systemctl restart prometheus
+    echo "✅ Prometheus reloaded."
+else
+    echo "⚠️  Prometheus service not detected as active under the name 'prometheus'. Reload it manually if your service name differs."
+fi
+
+echo "🎉 Done."
+EOF
+
+chmod +x /usr/local/bin/add-prometheus-target.sh
+echo "✅ add-prometheus-target.sh installed at /usr/local/bin/ — run it anytime with: sudo add-prometheus-target.sh"
