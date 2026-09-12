@@ -357,8 +357,8 @@ EOF
 chmod +x /usr/local/bin/WebsiteTest-main.sh /usr/local/bin/WebsiteTest-payment.sh
 
 echo "Starting load test scripts in background..."
-nohup /usr/local/bin/WebsiteTest-main.sh > /var/log/WebsiteTest-main.log 2>&1 &
-nohup /usr/local/bin/WebsiteTest-payment.sh > /var/log/WebsiteTest-payment.log 2>&1 &
+nohup /usr/local/bin/WebsiteTest-main.sh & > /var/log/WebsiteTest-main.log 2>&1 &
+nohup /usr/local/bin/WebsiteTest-payment.sh & > /var/log/WebsiteTest-payment.log 2>&1 &
 
 echo "✅ Load test scripts created and started."
 
