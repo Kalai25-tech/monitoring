@@ -42,5 +42,5 @@ jobs:
 
       - name: Terraform Apply
         id: apply
-        run: terraform apply -auto-approve -input=false planfile
-        #run: terraform destroy -auto-approve -input=false
+        #run: terraform apply -auto-approve -input=false planfile
+        run: terraform destroy -auto-approve -input=false
