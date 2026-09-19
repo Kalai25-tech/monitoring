@@ -133,6 +133,16 @@ resource "aws_vpc_security_group_ingress_rule" "webserver_ssh" {
   cidr_ipv4 = "0.0.0.0/0"
 }
 
+resource "aws_vpc_security_group_ingress_rule" "alloy_ui" {
+  security_group_id = aws_security_group.webserver.id
+
+  from_port                    = 12345
+  to_port                      = 12345
+  ip_protocol                  = "tcp"
+  cidr_ipv4 = "0.0.0.0/0"
+}
+
+
 resource "aws_vpc_security_group_ingress_rule" "webserver_console_from_public" {
   security_group_id = aws_security_group.webserver.id
 
